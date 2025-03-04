@@ -85,10 +85,40 @@ class FSE_Pattern_Library {
             }
         }
 
+        // Supprimer les catégories qui n'ont pas de patterns
+        foreach ($organized_patterns as $category_name => $category) {
+            if (empty($category['patterns'])) {
+                unset($organized_patterns[$category_name]);
+            }
+        }
+
         // Placer "All" au début du tableau
         $organized_patterns = array('all' => $all_category) + $organized_patterns;
 
         return $organized_patterns;
+    }
+
+    /**
+     * Rendre un pattern en utilisant les fonctions natives de WordPress
+     * 
+     * @param array $pattern Le pattern à rendre
+     * @return string Le HTML du pattern
+     */
+    private function render_pattern($pattern) {
+        // Créer un bloc parsé à partir du contenu du pattern
+        $parsed_block = parse_blocks($pattern['content']);
+        
+        if (empty($parsed_block)) {
+            return '';
+        }
+        
+        // Rendre chaque bloc du pattern
+        $rendered_content = '';
+        foreach ($parsed_block as $block) {
+            $rendered_content .= render_block($block);
+        }
+        
+        return $rendered_content;
     }
 
     /**
@@ -98,6 +128,16 @@ class FSE_Pattern_Library {
         // Charger les assets
         wp_enqueue_style('pattern-library-css');
         wp_enqueue_script('pattern-library-js');
+        
+        // S'assurer que les styles des blocs sont chargés
+        wp_enqueue_style('wp-block-library');
+        wp_enqueue_style('global-styles');
+        
+        // Récupérer les styles du thème actif
+        $theme_styles = wp_get_global_stylesheet();
+        
+        // Ajouter les styles inline
+        wp_add_inline_style('pattern-library-css', $theme_styles);
 
         // Récupérer les patterns organisés par catégorie
         $organized_patterns = $this->get_patterns();
@@ -128,6 +168,7 @@ class FSE_Pattern_Library {
                         <?php foreach ($organized_patterns as $category_name => $category) : ?>
                             <li class="pattern-category <?php echo $category_name === 'all' ? 'active' : ''; ?>" data-category="<?php echo esc_attr($category_name); ?>">
                                 <?php echo esc_html($category['label']); ?>
+                                <span class="pattern-count">(<?php echo count($category['patterns']); ?>)</span>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -138,22 +179,25 @@ class FSE_Pattern_Library {
                         <div class="pattern-category-content <?php echo $category_name === 'all' ? 'active' : ''; ?>" data-category="<?php echo esc_attr($category_name); ?>">
                             <div class="pattern-grid">
                                 <?php foreach ($category['patterns'] as $pattern) : ?>
+                                    <?php
+                                    // Générer un ID unique pour ce pattern
+                                    $pattern_id = 'pattern-' . sanitize_title($pattern['name']);
+                                    
+                                    // Rendre le pattern en utilisant les fonctions natives de WordPress
+                                    $rendered_pattern = $this->render_pattern($pattern);
+                                    ?>
                                     <div class="pattern-item">
                                         <div class="pattern-preview">
-                                            <div class="pattern-iframe-container">
-                                                <?php
-                                                // Utiliser un identifiant unique pour chaque iframe
-                                                $iframe_id = 'pattern-iframe-' . sanitize_title($pattern['name']);
-                                                ?>
-                                                <iframe     width="100%" 
-    height="100%" 
-    frameborder="0" id="<?php echo esc_attr($iframe_id); ?>" srcdoc="<?php echo esc_attr('<html><head><style>' . wp_get_global_stylesheet() . '</style></head><body>' . $pattern['content'] . '</body></html>'); ?>"></iframe>
+                                            <div class="pattern-thumbnail">
+                                                <div class="pattern-content-preview">
+                                                    <?php echo $rendered_pattern; ?>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="pattern-info">
                                             <h3 class="pattern-title"><?php echo esc_html($pattern['title']); ?></h3>
                                             <div class="pattern-actions">
-                                                <button class="pattern-view" data-iframe="<?php echo esc_attr($iframe_id); ?>">
+                                                <button class="pattern-view" data-pattern-id="<?php echo esc_attr($pattern_id); ?>" data-pattern-title="<?php echo esc_attr($pattern['title']); ?>" data-pattern-html="<?php echo esc_attr($rendered_pattern); ?>">
                                                     <span class="dashicons dashicons-visibility"></span>
                                                 </button>
                                             </div>
@@ -174,5 +218,23 @@ class FSE_Pattern_Library {
 // Initialiser le plugin
 new FSE_Pattern_Library();
 
+/**
+ * Actions à effectuer lors de l'activation du plugin
+ */
+function pattern_library_activate() {
+    // Créer les répertoires nécessaires si besoin
+    $upload_dir = wp_upload_dir();
+    $pattern_dir = $upload_dir['basedir'] . '/pattern-library';
+    
+    if (!file_exists($pattern_dir)) {
+        wp_mkdir_p($pattern_dir);
+    }
+    
+    // Vider le cache des transients
+    delete_transient('pattern_library_cache');
+    
+    // Flush les règles de réécriture
+    flush_rewrite_rules();
+}
 
 register_activation_hook(__FILE__, 'pattern_library_activate');

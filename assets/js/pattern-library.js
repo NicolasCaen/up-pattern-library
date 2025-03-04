@@ -1,111 +1,109 @@
+jQuery(document).ready(function($) {
+    // Fonction pour redimensionner les éléments
+    function resizeElements() {
+        $('.pattern-item').each(function() {
+            // Forcer un rafraîchissement du contenu de l'élément
+            var height = $(this).height();
+            $(this).height(height);
+        });
+    }
 
-        jQuery(document).ready(function($) {
-            // Gestion du changement de catégorie
-            $(".pattern-category").on("click", function() {
-                var category = $(this).data("category");
+    // Exécuter au chargement de la page
+    resizeElements();
 
-                // Mettre à jour les classes actives
-                $(".pattern-category").removeClass("active");
-                $(this).addClass("active");
+    // Exécuter lors du redimensionnement de la fenêtre
+    $(window).on('resize', function() {
+        resizeElements();
+    });
 
-                $(".pattern-category-content").removeClass("active");
-                $(".pattern-category-content[data-category=\"" + category + "\"]").addClass("active");
+    // Filtrage par catégorie
+    $('.pattern-category').on('click', function() {
+        const category = $(this).data('category');
+        
+        // Mettre à jour la catégorie active
+        $('.pattern-category').removeClass('active');
+        $(this).addClass('active');
+        
+        // Afficher les patterns de la catégorie sélectionnée
+        $('.pattern-category-content').removeClass('active');
+        $(`.pattern-category-content[data-category="${category}"]`).addClass('active');
+        
+        // Redimensionner les éléments après le changement de catégorie
+        setTimeout(function() {
+            // Forcer le recalcul des dimensions pour les patterns visibles
+            $(`.pattern-category-content[data-category="${category}"] .pattern-content`).each(function() {
+                $(this).css('display', 'block');
+                var width = $(this).width();
+                $(this).css('width', width);
             });
-
-            // Recherche de patterns
-            $("#pattern-search").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-
-                $(".pattern-item").each(function() {
-                    var title = $(this).find(".pattern-title").text().toLowerCase();
-                    if (title.indexOf(value) > -1) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            });
-
-            // Visualiser le pattern en grand
-            $(".pattern-view").on("click", function() {
-                var iframeId = $(this).data("iframe");
-                var $iframe = $("#" + iframeId);
-                var content = $iframe.attr("srcdoc");
-
-                // Créer une modal
-                var $modal = $("<div>", {
-                    class: "pattern-modal",
-                    css: {
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        background: "rgba(0,0,0,0.8)",
-                        zIndex: 9999,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }
-                });
-
-                // Créer un conteneur pour l'iframe
-                var $modalContent = $("<div>", {
-                    css: {
-                        width: "80%",
-                        height: "80%",
-                        background: "white",
-                        position: "relative",
-                        borderRadius: "4px",
-                        overflow: "hidden"
-                    }
-                });
-
-                // Créer un bouton de fermeture
-                var $closeBtn = $("<button>", {
-                    html: "×",
-                    css: {
-                        position: "absolute",
-                        top: "10px",
-                        right: "10px",
-                        background: "black",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50%",
-                        width: "30px",
-                        height: "30px",
-                        fontSize: "20px",
-                        cursor: "pointer",
-                        zIndex: 1
-                    }
-                });
-
-                // Créer un nouvel iframe
-                var $newIframe = $("<iframe>", {
-                    srcdoc: content,
-                    css: {
-                        width: "100%",
-                        height: "100%",
-                        border: "none"
-                    }
-                });
-
-                // Assembler la modal
-                $modalContent.append($closeBtn);
-                $modalContent.append($newIframe);
-                $modal.append($modalContent);
-                $("body").append($modal);
-
-                // Gestion de la fermeture
-                $closeBtn.on("click", function() {
-                    $modal.remove();
-                });
-
-                $modal.on("click", function(e) {
-                    if (e.target === this) {
-                        $modal.remove();
-                    }
-                });
-            });
+            resizeElements();
+        }, 100);
+    });
+    
+    // Recherche de patterns
+    $('#pattern-search').on('input', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        
+        $('.pattern-item').each(function() {
+            const title = $(this).find('.pattern-title').text().toLowerCase();
+            if (title.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
         });
         
+        // Redimensionner les éléments après la recherche
+        setTimeout(resizeElements, 100);
+    });
+    
+    // Affichage du pattern en plein écran
+    $('.pattern-view').on('click', function() {
+        const patternId = $(this).data('pattern-id');
+        const patternTitle = $(this).data('pattern-title');
+        const patternHtml = $(this).data('pattern-html');
+        
+        if (!patternHtml) {
+            console.error(`Pattern HTML not found for ID: ${patternId}`);
+            return;
+        }
+        
+        // Créer la modal
+        const modal = $(`
+            <div class="pattern-modal">
+                <div class="pattern-modal-content">
+                    <div class="pattern-modal-header">
+                        <h3>${patternTitle}</h3>
+                        <button class="pattern-modal-close">
+                            <span class="dashicons dashicons-no-alt"></span>
+                        </button>
+                    </div>
+                    <div class="pattern-modal-body">
+                        <div class="pattern-modal-preview">
+                            <div class="pattern-modal-container">
+                                <div class="pattern-modal-frame">
+                                    <div class="pattern-content">${patternHtml}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+        
+        // Ajouter la modal au body
+        $('body').append(modal);
+        
+        // Fermer la modal
+        modal.find('.pattern-modal-close').on('click', function() {
+            modal.remove();
+        });
+        
+        // Fermer la modal en cliquant en dehors
+        modal.on('click', function(e) {
+            if ($(e.target).hasClass('pattern-modal')) {
+                modal.remove();
+            }
+        });
+    });
+});
