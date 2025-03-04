@@ -1,0 +1,194 @@
+
+        .pattern-library {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .pattern-library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #f0f0f1;
+            border-radius: 4px;
+        }
+
+        .pattern-library-title {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .pattern-library-title .dashicons {
+            margin-right: 10px;
+        }
+
+        .pattern-library-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pattern-library-type {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #f0f0f1;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .pattern-library-pro {
+            background: #1d2327;
+            color: white;
+        }
+
+        .pattern-library-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .pattern-library-sidebar {
+            flex: 0 0 250px;
+        }
+
+        .pattern-library-search {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .pattern-library-search input {
+            width: 100%;
+            padding: 8px 30px 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .pattern-library-search .dashicons {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #646970;
+        }
+
+        .pattern-categories {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+
+        .pattern-category {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f1;
+        }
+
+        .pattern-category:hover {
+            background: #f6f7f7;
+        }
+
+        .pattern-category.active {
+            background: #1d2327;
+            color: white;
+            font-weight: bold;
+        }
+
+        .pattern-library-content {
+            flex: 1;
+        }
+
+        .pattern-category-content {
+            display: none;
+        }
+
+        .pattern-category-content.active {
+            display: block;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .pattern-item {
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .pattern-preview {
+            position: relative;
+            width: 100%;
+            padding-bottom: 70%; /* Maintenir le ratio */
+            overflow: hidden;
+            background: #f6f7f7;
+        }
+        
+        .pattern-iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pattern-iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(.9);
+            transform-origin: center center;
+            pointer-events: none;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .pattern-info {
+            padding: 10px 15px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pattern-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pattern-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #646970;
+            padding: 0;
+        }
+
+        .pattern-actions button:hover {
+            color: #1d2327;
+        }
+
+        @media (max-width: 768px) {
+            .pattern-library-container {
+                flex-direction: column;
+            }
+
+            .pattern-library-sidebar {
+                flex: 1;
+            }
+        }
+        
+
+        
