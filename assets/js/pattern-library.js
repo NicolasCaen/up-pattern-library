@@ -16,6 +16,13 @@ jQuery(document).ready(function($) {
         resizeElements();
     });
 
+    // Supprimer les styles inline qui définissent la hauteur à 0px
+    $('.pattern-item').each(function() {
+        if ($(this).attr('style') && $(this).attr('style').indexOf('height: 0px') !== -1) {
+            $(this).removeAttr('style');
+        }
+    });
+
     // Filtrage par catégorie
     $('.pattern-category').on('click', function() {
         const category = $(this).data('category');
@@ -38,6 +45,13 @@ jQuery(document).ready(function($) {
             });
             resizeElements();
         }, 100);
+
+        // Supprimer à nouveau les styles inline après changement de catégorie
+        $('.pattern-item').each(function() {
+            if ($(this).attr('style') && $(this).attr('style').indexOf('height: 0px') !== -1) {
+                $(this).removeAttr('style');
+            }
+        });
     });
     
     // Recherche de patterns

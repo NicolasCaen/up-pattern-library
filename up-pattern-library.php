@@ -136,6 +136,9 @@ class FSE_Pattern_Library {
         // Récupérer les styles du thème actif
         $theme_styles = wp_get_global_stylesheet();
         
+        // Supprimer les styles inline qui définissent la hauteur à 0px pour les cartes de pattern
+        $theme_styles = preg_replace('/\.pattern-item\s*\{\s*height\s*:\s*0px\s*;\s*\}/', '', $theme_styles);
+        
         // Ajouter les styles inline
         wp_add_inline_style('pattern-library-css', $theme_styles);
 

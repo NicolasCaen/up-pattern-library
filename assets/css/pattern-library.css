@@ -135,6 +135,8 @@
     overflow: hidden;
     background: white;
     transition: box-shadow 0.3s ease;
+    height: auto !important;
+    min-height: 300px !important;
 }
 
 .pattern-item:hover {
@@ -144,7 +146,7 @@
 .pattern-preview {
     position: relative;
     width: 100%;
-    padding-bottom: 70%; /* Maintenir le ratio */
+    height: 200px !important;
     overflow: hidden;
     background: #f6f7f7;
 }
@@ -165,7 +167,7 @@
     transform: scale(0.25);
     transform-origin: top left;
     width: 1400px;
-    height: auto;
+    min-height: 500px;
     background-color: #fff;
     position: absolute;
     top: 0;
